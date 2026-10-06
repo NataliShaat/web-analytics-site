@@ -1,18 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Web Analytics Website</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nat — Data Science & Analytics</title>
+<meta name="description" content="Nat's web analytics lab site — data science, analytics and machine learning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFE4EE; --panel:#FFF0F6; --line:#F4A7C3;
+    --text:#4A004A; --dim:#7a3d68;
+    --neon:#2D6A4F; --cyan:#B5006E; --pink:#B5006E; --mint:#95D5B2;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --sans:'Space Grotesk',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.6; min-height:100vh; overflow-x:hidden;
+  }
+  /* grid + scanlines */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(45,106,79,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(45,106,79,.07) 1px,transparent 1px);
+    background-size:40px 40px;
+    mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 75%);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:50; pointer-events:none;
+    background:none;
+  }
+  .glow{position:fixed;z-index:-1;border-radius:50%;filter:blur(110px);opacity:.35;pointer-events:none}
+  .g1{width:420px;height:420px;background:#F72585;top:-160px;right:-120px;opacity:.22}
+  .g2{width:380px;height:380px;background:#74C69D;bottom:-160px;left:-140px;opacity:.16}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+
+  /* nav */
+  nav{
+    position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);
+    background:rgba(255,228,238,.75);border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;justify-content:space-between;align-items:center;height:60px}
+  .logo{font-family:var(--mono);font-weight:700;color:var(--neon);text-decoration:none;letter-spacing:.5px}
+  .logo span{color:var(--dim)}
+  .status{font-family:var(--mono);font-size:12px;color:var(--dim);display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 4px rgba(45,106,79,.18);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* hero */
+  header{padding:90px 0 60px}
+  .prompt{font-family:var(--mono);font-size:14px;color:var(--dim);margin-bottom:18px}
+  .prompt b{color:var(--neon);font-weight:500}
+  h1{
+    font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.05;font-weight:700;letter-spacing:-1.5px;
+  }
+  h1 .accent{
+    background:linear-gradient(90deg,#2D6A4F,#B5006E);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .typed{font-family:var(--mono);color:var(--cyan);font-size:clamp(1rem,2.4vw,1.25rem);margin-top:22px;min-height:1.6em}
+  .cursor{display:inline-block;width:10px;height:1.1em;background:var(--pink);vertical-align:-3px;margin-left:3px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .tag{font-family:var(--mono);font-size:12px;padding:6px 12px;border:1.5px solid var(--neon);border-radius:999px;color:var(--neon);background:var(--panel)}
+  .tag::before{content:"#";color:var(--pink);margin-right:2px}
+
+  /* sections */
+  section{padding:40px 0}
+  .label{font-family:var(--mono);font-size:13px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  h2{font-size:1.9rem;font-weight:700;margin-bottom:16px;letter-spacing:-.5px}
+  p{color:var(--dim);max-width:640px}
+  p strong{color:var(--text);font-weight:500}
+
+  .terminal{
+    background:#1B4332;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    box-shadow:0 24px 60px -24px rgba(45,106,79,.55);
+  }
+  .bar{display:flex;gap:7px;padding:12px 14px;border-bottom:1px solid #2D6A4F;align-items:center}
+  .bar i{width:11px;height:11px;border-radius:50%;background:#2a3340}
+  .bar i:nth-child(1){background:#FF8FC7}.bar i:nth-child(2){background:#FFE4EE}.bar i:nth-child(3){background:#74C69D}
+  .bar small{margin-left:10px;font-family:var(--mono);color:#95D5B2;font-size:12px}
+  .term-body{padding:22px;font-family:var(--mono);font-size:14px;line-height:1.9;color:#95D5B2}
+  .term-body .k{color:#FF8FC7} .term-body .v{color:#FFE4EE} .term-body .c{color:#74C69D}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:24px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;transition:.25s;border-width:1.5px}
+  .stat:hover{border-color:var(--pink);box-shadow:0 10px 30px -14px rgba(181,0,110,.45);transform:translateY(-3px)}
+  .stat .n{font-family:var(--mono);font-size:1.8rem;color:var(--pink);font-weight:700}
+  .stat .t{color:var(--dim);font-size:14px}
+
+  /* CTA */
+  .cta{
+    margin-top:28px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;
+    font-family:var(--mono);font-size:15px;font-weight:700;color:#fff;
+    background:var(--neon);border:none;border-radius:12px;padding:16px 26px;
+    box-shadow:0 8px 0 -2px #1B4332;transition:.25s;
+  }
+  .cta:hover{background:#B5006E;box-shadow:0 8px 0 -2px #6B0041;transform:translateY(-2px)}
+  .cta .arrow{transition:transform .25s}
+  .cta:hover .arrow{transform:translateX(4px)}
+
+  .contact a{color:var(--cyan);text-decoration:none;font-family:var(--mono);border-bottom:1px dashed var(--cyan)}
+  .contact a:hover{color:var(--neon);border-color:var(--neon)}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (max-width:560px){ .term-body{font-size:12px;padding:16px} header{padding:60px 0 40px} }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
 </head>
 <body>
-<h1>Welcome to My Web Analytics Website</h1>
-<h2>About This Website</h2>
-<p>This website is created to learn and practice web analytics.</p>
-<h2>Our Services</h2>
-<p>We provide data analytics and digital marketing services.</p>
-<h2>Contact Us</h2>
-<p>Email: example@email.com</p>
-<button onclick="location.href='services.html'">
-View Services
-</button>
+<div class="glow g1"></div><div class="glow g2"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="index.html">nat<span>@</span>analytics<span>:~$</span></a>
+    <div class="status"><span class="dot"></span>online · riyadh</div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <header>
+    <div class="prompt"><b>nat@riyadh</b>:~$ ./welcome.sh</div>
+    <h1>Welcome to my<br><span class="accent">Web Analytics</span> website.</h1>
+    <div class="typed"><span id="typed"></span><span class="cursor"></span></div>
+    <div class="tags">
+      <span class="tag">data-science</span>
+      <span class="tag">machine-learning</span>
+      <span class="tag">big-data</span>
+      <span class="tag">etl</span>
+      <span class="tag">data-engineering</span>
+    </div>
+  </header>
+
+  <section class="reveal">
+    <div class="label">// 01 — about</div>
+    <h2>About This Website</h2>
+    <p>This site was built to <strong>learn and practice web analytics</strong> — every page view and button click here is a data point. I'm Nat, a <strong>Data Science &amp; Analytics</strong> student focused on AI and machine learning, working as an <strong>ETL Engineer at Teradata</strong> — keeping data pipelines healthy, from source to warehouse.</p>
+
+    <div class="terminal" style="margin-top:26px">
+      <div class="bar"><i></i><i></i><i></i><small>whoami.json</small></div>
+      <div class="term-body">
+        <span class="c">{</span><br>
+        &nbsp;&nbsp;<span class="k">"name"</span>: <span class="v">"Nat"</span>,<br>
+        &nbsp;&nbsp;<span class="k">"major"</span>: <span class="v">"Data Science &amp; Analytics"</span>,<br>
+        &nbsp;&nbsp;<span class="k">"focus"</span>: <span class="v">["AI", "Machine Learning", "Big Data"]</span>,<br>
+        &nbsp;&nbsp;<span class="k">"role"</span>: <span class="v">"ETL Engineer @ Teradata"</span>,<br>
+        &nbsp;&nbsp;<span class="k">"stack"</span>: <span class="v">["SQL", "Python", "Teradata", "Airflow"]</span>,<br>
+        &nbsp;&nbsp;<span class="k">"location"</span>: <span class="v">"Saudi Arabia"</span><br>
+        <span class="c">}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="label">// 02 — services</div>
+    <h2>My Services</h2>
+    <p>I turn raw data into decisions — from tracking how people use a website, to cleaning and analyzing datasets, to building models that predict what happens next.</p>
+    <div class="grid">
+      <div class="stat"><div class="n">01</div><div class="t">Web analytics &amp; event tracking</div></div>
+      <div class="stat"><div class="n">02</div><div class="t">ETL pipelines &amp; data engineering</div></div>
+      <div class="stat"><div class="n">03</div><div class="t">Machine learning models</div></div>
+    </div>
+
+    <button id="view_services_btn" class="cta" onclick="location.href='services.html'">
+      View Services <span class="arrow">→</span>
+    </button>
+  </section>
+
+  <section class="reveal contact">
+    <div class="label">// 03 — contact</div>
+    <h2>Contact Me</h2>
+    <p>Got a dataset, a project, or a question? Ping me.</p>
+    <p style="margin-top:12px">Email: <a href="mailto:example@email.com">example@email.com</a></p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr"></span> Nat · built for the web analytics lab</span>
+    <span>status: <span style="color:var(--neon)">200 OK</span></span>
+  </div>
+</footer>
+
+<script>
+  // typing effect
+  const lines = [
+    "> learning to read the data behind every click.",
+    "> data science · analytics · machine learning",
+    "> etl engineer — source → staging → warehouse."
+  ];
+  const el = document.getElementById("typed");
+  let li = 0, ci = 0, del = false;
+  function tick(){
+    const s = lines[li];
+    el.textContent = s.slice(0, ci);
+    if(!del && ci < s.length){ ci++; setTimeout(tick, 45); }
+    else if(!del){ del = true; setTimeout(tick, 1800); }
+    else if(ci > 0){ ci--; setTimeout(tick, 18); }
+    else { del = false; li = (li + 1) % lines.length; setTimeout(tick, 300); }
+  }
+  tick();
+
+  // scroll reveal
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  }), {threshold:.15});
+  document.querySelectorAll(".reveal").forEach(s => io.observe(s));
+
+  document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
