@@ -1,18 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Our Services</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Nat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFE4EE; --panel:#FFF0F6; --line:#F4A7C3;
+    --text:#4A004A; --dim:#7a3d68;
+    --neon:#2D6A4F; --cyan:#B5006E; --pink:#B5006E; --mint:#95D5B2;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --sans:'Space Grotesk',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.6; min-height:100vh; overflow-x:hidden;
+  }
+  /* grid + scanlines */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(45,106,79,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(45,106,79,.07) 1px,transparent 1px);
+    background-size:40px 40px;
+    mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 75%);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:50; pointer-events:none;
+    background:none;
+  }
+  .glow{position:fixed;z-index:-1;border-radius:50%;filter:blur(110px);opacity:.35;pointer-events:none}
+  .g1{width:420px;height:420px;background:#F72585;top:-160px;right:-120px;opacity:.22}
+  .g2{width:380px;height:380px;background:#74C69D;bottom:-160px;left:-140px;opacity:.16}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+
+  /* nav */
+  nav{
+    position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);
+    background:rgba(255,228,238,.75);border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;justify-content:space-between;align-items:center;height:60px}
+  .logo{font-family:var(--mono);font-weight:700;color:var(--neon);text-decoration:none;letter-spacing:.5px}
+  .logo span{color:var(--dim)}
+  .status{font-family:var(--mono);font-size:12px;color:var(--dim);display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 4px rgba(45,106,79,.18);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* hero */
+  header{padding:90px 0 60px}
+  .prompt{font-family:var(--mono);font-size:14px;color:var(--dim);margin-bottom:18px}
+  .prompt b{color:var(--neon);font-weight:500}
+  h1{
+    font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.05;font-weight:700;letter-spacing:-1.5px;
+  }
+  h1 .accent{
+    background:linear-gradient(90deg,#2D6A4F,#B5006E);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .typed{font-family:var(--mono);color:var(--cyan);font-size:clamp(1rem,2.4vw,1.25rem);margin-top:22px;min-height:1.6em}
+  .cursor{display:inline-block;width:10px;height:1.1em;background:var(--pink);vertical-align:-3px;margin-left:3px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .tag{font-family:var(--mono);font-size:12px;padding:6px 12px;border:1.5px solid var(--neon);border-radius:999px;color:var(--neon);background:var(--panel)}
+  .tag::before{content:"#";color:var(--pink);margin-right:2px}
+
+  /* sections */
+  section{padding:40px 0}
+  .label{font-family:var(--mono);font-size:13px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  h2{font-size:1.9rem;font-weight:700;margin-bottom:16px;letter-spacing:-.5px}
+  p{color:var(--dim);max-width:640px}
+  p strong{color:var(--text);font-weight:500}
+
+  .terminal{
+    background:#1B4332;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    box-shadow:0 24px 60px -24px rgba(45,106,79,.55);
+  }
+  .bar{display:flex;gap:7px;padding:12px 14px;border-bottom:1px solid #2D6A4F;align-items:center}
+  .bar i{width:11px;height:11px;border-radius:50%;background:#2a3340}
+  .bar i:nth-child(1){background:#FF8FC7}.bar i:nth-child(2){background:#FFE4EE}.bar i:nth-child(3){background:#74C69D}
+  .bar small{margin-left:10px;font-family:var(--mono);color:#95D5B2;font-size:12px}
+  .term-body{padding:22px;font-family:var(--mono);font-size:14px;line-height:1.9;color:#95D5B2}
+  .term-body .k{color:#FF8FC7} .term-body .v{color:#FFE4EE} .term-body .c{color:#74C69D}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:24px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;transition:.25s;border-width:1.5px}
+  .stat:hover{border-color:var(--pink);box-shadow:0 10px 30px -14px rgba(181,0,110,.45);transform:translateY(-3px)}
+  .stat .n{font-family:var(--mono);font-size:1.8rem;color:var(--pink);font-weight:700}
+  .stat .t{color:var(--dim);font-size:14px}
+
+  /* CTA */
+  .cta{
+    margin-top:28px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;
+    font-family:var(--mono);font-size:15px;font-weight:700;color:#fff;
+    background:var(--neon);border:none;border-radius:12px;padding:16px 26px;
+    box-shadow:0 8px 0 -2px #1B4332;transition:.25s;
+  }
+  .cta:hover{background:#B5006E;box-shadow:0 8px 0 -2px #6B0041;transform:translateY(-2px)}
+  .cta .arrow{transition:transform .25s}
+  .cta:hover .arrow{transform:translateX(4px)}
+
+  .contact a{color:var(--cyan);text-decoration:none;font-family:var(--mono);border-bottom:1px dashed var(--cyan)}
+  .contact a:hover{color:var(--neon);border-color:var(--neon)}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+<style>
+  .svc{display:grid;gap:18px;margin-top:10px}
+  .card{
+    position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;border-width:1.5px;
+    padding:28px 28px 26px 92px;transition:.3s;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0;opacity:0;transition:.3s;
+    background:linear-gradient(110deg,transparent 30%,rgba(181,0,110,.06) 50%,transparent 70%);
+  }
+  .card:hover{border-color:var(--pink);box-shadow:0 14px 34px -18px rgba(181,0,110,.5);transform:translateX(6px)}
+  .card:hover::before{opacity:1}
+  .card .num{
+    position:absolute;left:26px;top:26px;font-family:var(--mono);font-weight:700;
+    font-size:1.5rem;color:var(--neon);
+  }
+  .card h2{font-size:1.45rem;margin-bottom:6px}
+  .card .cmd{font-family:var(--mono);font-size:12px;color:var(--neon);margin-bottom:10px}
+  .card ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .card li{font-family:var(--mono);font-size:11.5px;color:var(--cyan);border:1px solid rgba(181,0,110,.35);padding:4px 10px;border-radius:4px}
+  .back{background:var(--panel);color:var(--neon);border:2px solid var(--neon)}
+  .back:hover{background:var(--pink);border-color:var(--pink);color:#fff}
+  .back:hover .arrow{transform:translateX(-4px)}
+  @media (max-width:560px){ .card{padding:70px 22px 22px} .card .num{left:22px;top:22px} }
+</style>
 </head>
 <body>
-<h1>Our Services</h1>
-<h2>Web Analytics</h2>
-<p>We analyze website traffic and user behavior.</p>
-<h2>Data Analysis</h2>
-<p>We use data to understand customer behavior.</p>
-<h2>Digital Marketing</h2>
-<p>We help improve online marketing performance.</p>
-<button onclick="location.href='index.html'">
-Back to Home
-</button>
+<div class="glow g1"></div><div class="glow g2"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="index.html">nat<span>@</span>analytics<span>:~/services$</span></a>
+    <div class="status"><span class="dot"></span>3 modules loaded</div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <header style="padding-bottom:30px">
+    <div class="prompt"><b>nat@riyadh</b>:~$ ls ./services</div>
+    <h1>My <span class="accent">Services</span>.</h1>
+    <div class="typed">&gt; what I do with data<span class="cursor"></span></div>
+  </header>
+
+  <section class="svc">
+    <div class="card reveal">
+      <div class="num">01</div>
+      <div class="cmd">$ run web_analytics</div>
+      <h2>Web Analytics</h2>
+      <p>I analyze website traffic and user behavior — tracking page views, clicks and custom events to see how people actually move through a site.</p>
+      <ul><li>GA4</li><li>Google Tag Manager</li><li>event tracking</li><li>funnels</li></ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="num">02</div>
+      <div class="cmd">$ run data_analysis</div>
+      <h2>Data Analysis</h2>
+      <p>I use data to understand customer behavior — as an ETL engineer I build and monitor the pipelines that move data from source to warehouse, then turn it into clear answers.</p>
+      <ul><li>ETL pipelines</li><li>Teradata</li><li>SQL</li><li>Python</li><li>Airflow</li></ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="num">03</div>
+      <div class="cmd">$ run machine_learning</div>
+      <h2>Machine Learning</h2>
+      <p>I build models that predict what comes next and help improve online performance — from classic classifiers to neural networks, shipped with simple front ends.</p>
+      <ul><li>scikit-learn</li><li>neural nets</li><li>Streamlit</li><li>Arabic NLP</li></ul>
+    </div>
+
+    <div class="reveal">
+      <button id="back_home_btn" class="cta back" onclick="location.href='index.html'">
+        <span class="arrow">←</span> Back to Home
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr"></span> Nat · built for the web analytics lab</span>
+    <span>status: <span style="color:var(--neon)">200 OK</span></span>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  }), {threshold:.1});
+  document.querySelectorAll(".reveal").forEach(s => io.observe(s));
+  document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
